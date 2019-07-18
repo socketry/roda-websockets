@@ -18,7 +18,7 @@ https://github.com/havenwood/roda-websockets
 roda-websockets requires that you use [Falcon](https://github.com/socketry/falcon) as your web server in order to establish asynchronous websocket connections.
 
 ```ruby
-falcon serve --bind http://localhost:3000 --count 1 --config config.ru
+falcon serve --count 1
 ```
 
 roda-websockets is a roda plugin, so you need to load it into your roda
