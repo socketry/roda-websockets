@@ -30,7 +30,7 @@ class App < Roda
         };
 
         socket.onmessage = function(event) {
-          status.innerHTML = JSON.parse(event.data);
+          status.innerHTML = event.data;
         };
       </script>
     </body>
@@ -41,17 +41,17 @@ class App < Roda
 
   def on_message(connection, pineapple_count:)
     Async do |task|
-      connection.write "Eating #{pineapple_count} pineapples."
+      connection.write "Eating #{pineapple_count.buffer} pineapples."
       connection.flush
 
-      pineapple_count.downto(1) do |n|
+      pineapple_count.buffer.to_i.downto(1) do |n|
         task.sleep 1
         connection.write '🍍' * n
         connection.flush
       end
       task.sleep 1
 
-      connection.write "Ate #{pineapple_count} pineapples."
+      connection.write "Ate #{pineapple_count.buffer} pineapples."
       connection.flush
     end
   end
