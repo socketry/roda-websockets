@@ -1,19 +1,30 @@
 # frozen_string_literal: true
 
-Gem::Specification.new do |s|
-  s.name = 'roda-websockets'
-  s.version = '0.1.0'
-  s.platform = Gem::Platform::RUBY
-  s.license = 'MIT'
-  s.summary = 'WebSocket integration for Roda'
-  s.description = 'The roda-websockets gem integrates async-websockets into the roda web toolkit.'
-  s.author = 'Shannon Skipper'
-  s.email = 'shannonskipper@gmail.com'
-  s.homepage = 'https://github.com/havenwood/roda-websockets'
-  s.files = %w[CHANGELOG.md Gemfile LICENSE Rakefile README.md] + Dir['{spec,lib}/**/*.rb']
-  s.add_dependency('async-websocket', '~> 0.12')
-  s.add_dependency('falcon', '~> 0.33')
-  s.add_dependency('roda', '~> 3.0')
-  s.add_development_dependency('minitest', '~> 5.11')
-  s.add_development_dependency('minitest-proveit', '~> 1.0')
+require_relative "lib/roda/websockets/version"
+
+Gem::Specification.new do |spec|
+	spec.name = "roda-websockets"
+	spec.version = Roda::WebSockets::VERSION
+	
+	spec.summary = "WebSocket integration for Roda"
+	spec.authors = ["Shannon Skipper", "Jeffrey Lim", "Samuel Williams"]
+	spec.license = "MIT"
+	
+	spec.cert_chain  = ['release.cert']
+	spec.signing_key = File.expand_path('~/.gem/release.pem')
+	
+	spec.homepage = "https://github.com/socketry/roda-websockets"
+	
+	spec.metadata = {
+		"documentation_uri" => "https://socketry.github.io/roda-websockets/",
+		"source_code_uri" => "https://github.com/socketry/roda-websockets.git",
+	}
+	
+	spec.files = Dir['{lib}/**/*', '*.md', base: __dir__]
+	
+	spec.required_ruby_version = ">= 3.1"
+	
+	spec.add_dependency "async-websocket", "~> 0.12"
+	spec.add_dependency "falcon", "~> 0.33"
+	spec.add_dependency "roda", "~> 3.0"
 end

@@ -6,80 +6,80 @@ require 'roda'
 ##
 # Run this example with `ruby client.rb` or browse to https://localhost:9292.
 class App < Roda
-  # Roda usually extracts HTML to separate files, but we'll inline it here.
-  BODY = <<~HTML
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <title>WebSockets Example</title>
-    </head>
-    <body>
-      <script>
-        const socket = new WebSocket('wss://localhost:9292');
-        const min = 2;
-        const max = 12;
-        const pineapples = Math.floor(Math.random() * (max - min + 1)) + min;
-        const status = document.createElement('h1');
+	# Roda usually extracts HTML to separate files, but we'll inline it here.
+	BODY = <<~HTML
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+			<meta charset="UTF-8">
+			<title>WebSockets Example</title>
+		</head>
+		<body>
+			<script>
+				const socket = new WebSocket('wss://localhost:9292');
+				const min = 2;
+				const max = 12;
+				const pineapples = Math.floor(Math.random() * (max - min + 1)) + min;
+				const status = document.createElement('h1');
 
-        status.innerText = `Eating ${pineapples} pineapples.`;
-        document.body.appendChild(status);
+				status.innerText = `Eating ${pineapples} pineapples.`;
+				document.body.appendChild(status);
 
-        socket.onopen = function() {
-          socket.send(JSON.stringify(pineapples));
-        };
+				socket.onopen = function() {
+					socket.send(JSON.stringify(pineapples));
+				};
 
-        socket.onmessage = function(event) {
-          status.innerHTML = event.data;
-        };
-      </script>
-    </body>
-    </html>
-  HTML
+				socket.onmessage = function(event) {
+					status.innerHTML = event.data;
+				};
+			</script>
+		</body>
+		</html>
+	HTML
 
-  plugin :websockets
+	plugin :websockets
 
-  def on_message(connection, pineapple_count:)
-    Async do |task|
-      connection.write "Eating #{pineapple_count.buffer} pineapples."
-      connection.flush
+	def on_message(connection, pineapple_count:)
+		Async do |task|
+			connection.write "Eating #{pineapple_count.buffer} pineapples."
+			connection.flush
 
-      pineapple_count.buffer.to_i.downto(1) do |n|
-        task.sleep 1
-        connection.write '🍍' * n
-        connection.flush
-      end
-      task.sleep 1
+			pineapple_count.buffer.to_i.downto(1) do |n|
+				task.sleep 1
+				connection.write '🍍' * n
+				connection.flush
+			end
+			task.sleep 1
 
-      connection.write "Ate #{pineapple_count.buffer} pineapples."
-      connection.flush
-    end
-  end
+			connection.write "Ate #{pineapple_count.buffer} pineapples."
+			connection.flush
+		end
+	end
 
-  def messages(connection)
-    Enumerator.new do |yielder|
-      loop do
-        message = connection.read
-        break unless message
+	def messages(connection)
+		Enumerator.new do |yielder|
+			loop do
+				message = connection.read
+				break unless message
 
-        yielder << message
-      end
-    end
-  end
+				yielder << message
+			end
+		end
+	end
 
-  route do |r|
-    r.is '' do
-      r.websocket do |connection|
-        messages(connection).each do |message|
-          on_message(connection, pineapple_count: message)
-        end
-      end
+	route do |r|
+		r.is '' do
+			r.websocket do |connection|
+				messages(connection).each do |message|
+					on_message(connection, pineapple_count: message)
+				end
+			end
 
-      r.get do
-        BODY
-      end
-    end
-  end
+			r.get do
+				BODY
+			end
+		end
+	end
 end
 
 run App.freeze.app
