@@ -1,2 +1,5 @@
-/Gemfile.lock
-/roda-websockets-*.gem
+/.bundle/
+/pkg/
+/gems.locked
+/.covered.db
+/external
